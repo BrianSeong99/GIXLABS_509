@@ -29,7 +29,7 @@ def flood_fill(input_board: List[str], old: str, new: str, x: int, y: int) -> Li
     if x >= len(input_board) or x < 0:
         return input_board
     if y >= len(input_board[x]) or y < 0:
-        return input_board
+        return input_board 
     if input_board[x][y] != old:
         return input_board
     
