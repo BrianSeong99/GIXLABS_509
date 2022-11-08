@@ -14,20 +14,26 @@ if __name__ == '__main__':
         while True:
             x = input("Please put down your move, in row: ")
             y = input("Please put down your move, in col: ")
+            # check if the input is number
             if x.isnumeric() == False or y.isnumeric() == False:
                 print("Please input in numbers")
                 continue
             x = int(x)
             y = int(y)
+            # check if the input its within the viable range
             if x >= len(board) or x < 0 or y >= len(board[0]) or y < 0:
                 print("Please input the number within the board size")
                 continue
+            # check if the input position is placable
             if board[int(x)][int(y)] != '.':
                 print("Cannot Place on already used position!")
+            # able to place the move
             else:
                 board[int(x)][int(y)] = player
                 break
+        # switch to other player
         player = other_player(player)
+        # get the winner
         winner = get_winner(board)
         print()
         # TODO: Show the board to the user.
