@@ -51,3 +51,9 @@ def get_winner(board):
 def other_player(player):
     """Given the character for a player, returns the other player."""
     return 'X' if player == 'O' else 'O'
+
+def print_board(board):
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            print(board[i][j], end=" ")
+        print()
