@@ -2,58 +2,148 @@
 # or output happens here. The logic in this file
 # should be unit-testable.
 
+class Board:
+    def __init__(self):
+        self.rows = [
+            [None, None, None],
+            [None, None, None],
+            [None, None, None]
+        ]
 
-def make_empty_board():
-    return [
-        ['.', '.', '.'],
-        ['.', '.', '.'],
-        ['.', '.', '.'],
-    ]
+    def __str__(self):
+        print_string = ''
+        for row in self.rows:
+            for item in row:
+                if item is None:
+                    print_string = print_string + '.'
+                else:
+                    print_string = print_string + item
+            print_string = print_string + '\n'
+        return print_string
+    
+    def get(self, x, y):
+        return self.rows[x][y]
+    
+    def set(self, x, y, value):
+        self.rows[x][y] = value
 
-def get_winner(board):
-    """Determines the winner of the given board.
-    Returns 'X', 'O', or None."""
-    if not board:
-        raise ValueError("No inputs given.")
+    def get_winner(self):
+        winner = None
+        if self.rows[0][0] == self.rows[1][0] == self.rows[2][0]:
+            winner = self.rows[0][0]
+            return winner
+        if self.rows[0][1] == self.rows[1][1] == self.rows[2][1]:
+            winner = self.rows[0][1]
+            return winner
+        if self.rows[0][2] == self.rows[1][2] == self.rows[2][2]:
+            winner = self.rows[0][2]
+            return winner
+        if self.rows[0][0] == self.rows[0][1] == self.rows[0][2]:
+            winner = self.rows[0][0]
+            return winner
+        if self.rows[1][1] == self.rows[1][1] == self.rows[1][2]:
+            winner = self.rows[1][1]
+            return winner
+        if self.rows[2][0] == self.rows[2][1] == self.rows[2][2]:
+            winner = self.rows[2][0]
+            return winner
+        if self.rows[0][0] == self.rows[1][1] == self.rows[2][2]:
+            winner = self.rows[0][0]
+            return winner
+        if self.rows[0][2] == self.rows[1][1] == self.rows[2][0]:
+            winner = self.rows[0][2]
+        return winner
 
-    if len(board) != 3 or len(board[0]) != 3:
-        raise IndexError("Board does not conform to the right dimensions of a 3x3 matrix.")
+    def get_row_size(self):
+        return len(self.rows)
+    
+    def get_col_size(self):
+        return len(self.rows[0])
+    
+    def is_board_filled(self):
+        for row in self.rows:
+            for item in row:
+                if item is None:
+                    return False
+        return True
+class Player:
+    def __init__(self, symbol, player_type):
+        self.symbol = symbol
+        self.player_type = player_type
 
-    if not all([element in ["X", "O", '.'] for row in board for element in row]):
-        raise ValueError("Board contains one or more entries that is neither 'X' nor 'O'.")
+    def get_symbol(self):
+        return self.symbol
+    
+    def get_type(self):
+        return self.player_type
 
-    winner = ""
-    if board[0][0] == board[1][0] == board[2][0]:
-        winner = board[0][0]
-        return winner
-    if board[0][1] == board[1][1] == board[2][1]:
-        winner = board[0][1]
-        return winner
-    if board[0][2] == board[1][2] == board[2][2]:
-        winner = board[0][2]
-        return winner
-    if board[0][0] == board[0][1] == board[0][2]:
-        winner = board[0][0]
-        return winner
-    if board[1][1] == board[1][1] == board[1][2]:
-        winner = board[1][1]
-        return winner
-    if board[2][0] == board[2][1] == board[2][2]:
-        winner = board[2][0]
-        return winner
-    if board[0][0] == board[1][1] == board[2][2]:
-        winner = board[0][0]
-        return winner
-    if board[0][2] == board[1][1] == board[2][0]:
-        winner = board[0][2]
-    return winner
+class Human(Player):
+    def __init__(self, symbol):
+        super().__init__(symbol, "Human")
 
-def other_player(player):
-    """Given the character for a player, returns the other player."""
-    return 'X' if player == 'O' else 'O'
+    def get_move(self, board):
+        while True:
+            x = input("Please put down your move, in row: ")
+            y = input("Please put down your move, in col: ")
+            # check if the input is number
+            if x.isnumeric() == False or y.isnumeric() == False:
+                print("Please input in numbers")
+                continue
+            x = int(x)
+            y = int(y)
+            # check if the input its within the viable range
+            if x >= board.get_row_size() or x < 0 or y >= board.get_col_size() or y < 0:
+                print("Please input the number within the board size")
+                continue
+            # check if the input position is placable
+            if board.get(int(x), int(y)) is None:
+                board.set(int(x), int(y), self.symbol)
+                break
+            else:
+                print("Cannot Place on already used position!")
 
-def print_board(board):
-    for i in range(len(board)):
-        for j in range(len(board[i])):
-            print(board[i][j], end=" ")
-        print()
+class Bot(Player):
+    def __init__(self, symbol):
+        super().__init__(symbol, "Bot")
+
+    def get_move(self, board):
+        pass
+
+class Game:
+    def __init__(self, player_x, player_o):
+        self.board = Board()
+        self.player_x = player_x
+        self.player_x.set_symbol = 'X'
+        self.player_o = player_o
+        self.player_o.set_symbol = 'O'
+        self.current_player = 'X'
+    
+    def next_player(self):
+        if self.current_player == 'X':
+            self.current_player = 'O'
+            return self.player_o
+        else:
+            self.current_player = 'X'
+            return self.player_x
+    
+    def print_turn(self, player):
+        print_string = '\nCurrent Turn: ' + player.get_type() + ' ' + self.current_player
+        print(print_string)
+        print(self.board)
+
+    def announce_result(self, winner, filled):
+        if winner is None and filled is True:
+            print("\nNo More Spot to place Chess, No Winner is found")
+        else:
+            print("\nWinner is: ", winner)
+
+    def run(self):
+        winner = self.board.get_winner()
+        filled = self.board.is_board_filled()
+        while winner is None and filled is False:
+            next_player = self.next_player()
+            self.print_turn(next_player)
+            next_player.get_move(self.board)
+            winner = self.board.get_winner()
+            filled = self.board.is_board_filled()
+        self.announce_result(winner, filled)        
