@@ -35,7 +35,7 @@ def get_winner(board):
     if board[0][0] == board[0][1] == board[0][2]:
         winner = board[0][0]
         return winner
-    if board[1][1] == board[1][1] == board[1][2]:
+    if board[1][0] == board[1][1] == board[1][2]:
         winner = board[1][1]
         return winner
     if board[2][0] == board[2][1] == board[2][2]:
