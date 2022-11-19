@@ -2,6 +2,7 @@
 # or output happens here. The logic in this file
 # should be unit-testable.
 
+import random
 class Board:
     def __init__(self):
         self.rows = [
@@ -29,27 +30,35 @@ class Board:
 
     def get_winner(self):
         winner = None
+        # first col
         if self.rows[0][0] == self.rows[1][0] == self.rows[2][0]:
             winner = self.rows[0][0]
             return winner
+        # second col
         if self.rows[0][1] == self.rows[1][1] == self.rows[2][1]:
             winner = self.rows[0][1]
             return winner
+        # third col
         if self.rows[0][2] == self.rows[1][2] == self.rows[2][2]:
             winner = self.rows[0][2]
             return winner
+        # first row
         if self.rows[0][0] == self.rows[0][1] == self.rows[0][2]:
             winner = self.rows[0][0]
             return winner
-        if self.rows[1][1] == self.rows[1][1] == self.rows[1][2]:
+        # second row
+        if self.rows[1][0] == self.rows[1][1] == self.rows[1][2]:
             winner = self.rows[1][1]
             return winner
+        # third row
         if self.rows[2][0] == self.rows[2][1] == self.rows[2][2]:
             winner = self.rows[2][0]
             return winner
+        # down
         if self.rows[0][0] == self.rows[1][1] == self.rows[2][2]:
             winner = self.rows[0][0]
             return winner
+        # up
         if self.rows[0][2] == self.rows[1][1] == self.rows[2][0]:
             winner = self.rows[0][2]
         return winner
@@ -107,7 +116,12 @@ class Bot(Player):
         super().__init__(symbol, "Bot")
 
     def get_move(self, board):
-        pass
+        while True:
+            x = random.randint(0,2)
+            y = random.randint(0,2)
+            if board.get(int(x), int(y)) is None:
+                board.set(int(x), int(y), self.symbol)
+                break
 
 class Game:
     def __init__(self, player_x, player_o):
@@ -116,7 +130,7 @@ class Game:
         self.player_x.set_symbol = 'X'
         self.player_o = player_o
         self.player_o.set_symbol = 'O'
-        self.current_player = 'X'
+        self.current_player = 'O'
     
     def next_player(self):
         if self.current_player == 'X':
@@ -132,6 +146,7 @@ class Game:
         print(self.board)
 
     def announce_result(self, winner, filled):
+        print(self.board)
         if winner is None and filled is True:
             print("\nNo More Spot to place Chess, No Winner is found")
         else:
@@ -146,4 +161,4 @@ class Game:
             next_player.get_move(self.board)
             winner = self.board.get_winner()
             filled = self.board.is_board_filled()
-        self.announce_result(winner, filled)        
+        self.announce_result(winner, filled)       
