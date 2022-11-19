@@ -161,4 +161,4 @@ class Game:
             next_player.get_move(self.board)
             winner = self.board.get_winner()
             filled = self.board.is_board_filled()
-        self.announce_result(winner, filled)       
+        self.announce_result(winner, filled)
