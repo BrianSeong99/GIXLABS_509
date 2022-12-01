@@ -22,7 +22,7 @@ def get_winner(board):
     if not all([element in ["X", "O", '.'] for row in board for element in row]):
         raise ValueError("Board contains one or more entries that is neither 'X' nor 'O'.")
 
-    winner = ""
+    winner = '.'
     if board[0][0] == board[1][0] == board[2][0]:
         winner = board[0][0]
         return winner

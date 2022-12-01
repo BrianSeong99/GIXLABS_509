@@ -31,35 +31,35 @@ class Board:
     def get_winner(self):
         winner = None
         # first col
-        if self.rows[0][0] == self.rows[1][0] == self.rows[2][0]:
+        if self.rows[0][0] == self.rows[1][0] == self.rows[2][0] and self.rows[0][0] != None:
             winner = self.rows[0][0]
             return winner
         # second col
-        if self.rows[0][1] == self.rows[1][1] == self.rows[2][1]:
+        if self.rows[0][1] == self.rows[1][1] == self.rows[2][1] and self.rows[0][1] != None:
             winner = self.rows[0][1]
             return winner
         # third col
-        if self.rows[0][2] == self.rows[1][2] == self.rows[2][2]:
+        if self.rows[0][2] == self.rows[1][2] == self.rows[2][2] and self.rows[0][2] != None:
             winner = self.rows[0][2]
             return winner
         # first row
-        if self.rows[0][0] == self.rows[0][1] == self.rows[0][2]:
+        if self.rows[0][0] == self.rows[0][1] == self.rows[0][2] and self.rows[0][0] != None:
             winner = self.rows[0][0]
             return winner
         # second row
-        if self.rows[1][0] == self.rows[1][1] == self.rows[1][2]:
+        if self.rows[1][0] == self.rows[1][1] == self.rows[1][2] and self.rows[1][0] != None:
             winner = self.rows[1][1]
             return winner
         # third row
-        if self.rows[2][0] == self.rows[2][1] == self.rows[2][2]:
+        if self.rows[2][0] == self.rows[2][1] == self.rows[2][2] and self.rows[2][0] != None:
             winner = self.rows[2][0]
             return winner
         # down
-        if self.rows[0][0] == self.rows[1][1] == self.rows[2][2]:
+        if self.rows[0][0] == self.rows[1][1] == self.rows[2][2] and self.rows[0][0] != None:
             winner = self.rows[0][0]
             return winner
         # up
-        if self.rows[0][2] == self.rows[1][1] == self.rows[2][0]:
+        if self.rows[0][2] == self.rows[1][1] == self.rows[2][0] and self.rows[0][2] != None:
             winner = self.rows[0][2]
         return winner
 
