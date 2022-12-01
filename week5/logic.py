@@ -46,7 +46,8 @@ def get_winner(board):
         return winner
     if board[0][2] == board[1][1] == board[2][0]:
         winner = board[0][2]
-    return winner
+    return winner # for this one, its just trying to reduce a return winner, even if i add a return winner in previous if block, i would still need to have a overall `return winner` at the end, so i just merged them together, no need to write one more.
+    
 
 def other_player(player):
     """Given the character for a player, returns the other player."""
