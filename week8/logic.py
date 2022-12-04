@@ -3,6 +3,9 @@
 # should be unit-testable.
 
 import random
+import pandas as pd
+from os.path import exists
+
 class Board:
     def __init__(self):
         self.rows = [
@@ -76,9 +79,10 @@ class Board:
                     return False
         return True
 class Player:
-    def __init__(self, symbol, player_type):
+    def __init__(self, symbol, player_type, player_name):
         self.symbol = symbol
         self.player_type = player_type
+        self.player_name = player_name
 
     def get_symbol(self):
         return self.symbol
@@ -87,8 +91,8 @@ class Player:
         return self.player_type
 
 class Human(Player):
-    def __init__(self, symbol):
-        super().__init__(symbol, "Human")
+    def __init__(self, symbol, name):
+        super().__init__(symbol, "Human", name)
 
     def get_move(self, board):
         while True:
@@ -112,8 +116,8 @@ class Human(Player):
                 print("Cannot Place on already used position!")
 
 class Bot(Player):
-    def __init__(self, symbol):
-        super().__init__(symbol, "Bot")
+    def __init__(self, symbol, name):
+        super().__init__(symbol, "Bot", name)
 
     def get_move(self, board):
         while True:
@@ -124,13 +128,23 @@ class Bot(Player):
                 break
 
 class Game:
-    def __init__(self, player_x, player_o):
+    def __init__(self, player_x, player_o, games_filename):
         self.board = Board()
         self.player_x = player_x
         self.player_x.set_symbol = 'X'
         self.player_o = player_o
         self.player_o.set_symbol = 'O'
         self.current_player = 'O'
+        self.games_filename = games_filename
+        if (exists(games_filename)):
+            self.games = pd.read_csv(games_filename)
+        else:
+            self.games = pd.DataFrame(columns=[
+                "Game ID",
+                "Player 1",
+                "Player 2",
+                "Winner",
+            ])
     
     def next_player(self):
         if self.current_player == 'X':
@@ -149,8 +163,24 @@ class Game:
         print(self.board)
         if winner is None and filled is True:
             print("\nNo More Spot to place Chess, No Winner is found")
+            self.games.loc[len(self.games)] = {
+                "Game ID": len(self.games),
+                "Player 1": self.player_x.player_name,
+                "Player 2": self.player_o.player_name,
+                "Winner": "No Winner",
+            }
         else:
             print("\nWinner is: ", winner)
+            self.games.loc[len(self.games)] = {
+                "Game ID": len(self.games),
+                "Player 1": self.player_x.player_name,
+                "Player 2": self.player_o.player_name,
+                "Winner": self.player_x.player_name if winner == self.player_x.symbol else self.player_o.player_name,
+            }
+        counts = self.games['Winner'].value_counts()
+        print(self.player_x.player_name, "'s total wins: ", counts[self.player_x.player_name] if self.player_x.player_name in counts else 0)
+        print(self.player_o.player_name, "'s total wins: ", counts[self.player_o.player_name] if self.player_o.player_name in counts else 0)
+        print("total draw: ", counts["No Winner"] if "No Winner" in counts else 0)
 
     def run(self):
         winner = self.board.get_winner()
@@ -162,3 +192,4 @@ class Game:
             winner = self.board.get_winner()
             filled = self.board.is_board_filled()
         self.announce_result(winner, filled)
+        self.games.to_csv(self.games_filename, index=False)

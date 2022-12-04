@@ -2,6 +2,7 @@ import unittest
 import logic
 from unittest.mock import patch
 
+import pandas as pd
 
 class TestLogic(unittest.TestCase):
 
