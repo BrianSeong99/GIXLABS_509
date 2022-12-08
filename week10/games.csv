@@ -1,0 +1,14 @@
+Game ID,Player 1,Player 2,Winner
+0,Alice,Bob,No Winner
+1,Alice,Bob,Alice
+2,Alice,Bob,Alice
+3,Alice,Bob,Alice
+4,Alice,Bob,Alice
+5,David,Bob,Bob
+6,David,Bob,Bob
+7,David,Bob,David
+8,Brian,Bob,Bob
+9,Brian,Bob,David
+10,Brian,Bob,Brian
+11,David,Brian,Brian
+11,Alice,Brian,No Winner
