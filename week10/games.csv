@@ -20,3 +20,6 @@ Game ID,Player 1,Player 2,Winner
 18,Alice,Bob,Alice
 19,Alice,Bobbyy,Alice
 20,Alice,Bobbyy,Bobbyy
+21,Brian,Bot,No Winner
+22,Brian,Bot,Brian
+23,Alice,Bob,Bob
