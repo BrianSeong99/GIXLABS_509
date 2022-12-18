@@ -25,6 +25,9 @@ class Board:
             print_string = print_string + '\n'
         return print_string
     
+    def getboardflask(self):
+        return self.rows
+
     def get(self, x, y):
         return self.rows[x][y]
     
@@ -94,32 +97,38 @@ class Human(Player):
     def __init__(self, symbol, name):
         super().__init__(symbol, "Human", name)
 
-    def get_move(self, board):
-        while True:
-            x = input("Please put down your move, in row: ")
-            y = input("Please put down your move, in col: ")
-            # check if the input is number
-            if x.isnumeric() == False or y.isnumeric() == False:
-                print("Please input in numbers")
-                continue
-            x = int(x)
-            y = int(y)
-            # check if the input its within the viable range
-            if x >= board.get_row_size() or x < 0 or y >= board.get_col_size() or y < 0:
-                print("Please input the number within the board size")
-                continue
-            # check if the input position is placable
+    def get_move(self, board, isFlask, x, y):
+        if isFlask:
             if board.get(int(x), int(y)) is None:
-                board.set(int(x), int(y), self.symbol)
-                break
+                board.set(x, y, self.symbol)
             else:
-                print("Cannot Place on already used position!")
+                return "already in place"
+        else:
+            while True:
+                x = input("Please put down your move, in row: ")
+                y = input("Please put down your move, in col: ")
+                # check if the input is number
+                if x.isnumeric() == False or y.isnumeric() == False:
+                    print("Please input in numbers")
+                    continue
+                x = int(x)
+                y = int(y)
+                # check if the input its within the viable range
+                if x >= board.get_row_size() or x < 0 or y >= board.get_col_size() or y < 0:
+                    print("Please input the number within the board size")
+                    continue
+                # check if the input position is placable
+                if board.get(int(x), int(y)) is None:
+                    board.set(int(x), int(y), self.symbol)
+                    break
+                else:
+                    print("Cannot Place on already used position!")
 
 class Bot(Player):
     def __init__(self, symbol, name):
         super().__init__(symbol, "Bot", name)
 
-    def get_move(self, board):
+    def get_move(self, board, isFlask, x, y):
         while True:
             x = random.randint(0,2)
             y = random.randint(0,2)
@@ -154,6 +163,14 @@ class Game:
             self.current_player = 'X'
             return self.player_x
     
+    def prev_player(self):
+        if self.current_player == 'X':
+            self.current_player = 'O'
+            return self.player_o
+        else:
+            self.current_player = 'X'
+            return self.player_x
+    
     def print_turn(self, player):
         print_string = '\nCurrent Turn: ' + player.get_type() + ' ' + self.current_player
         print(print_string)
@@ -181,6 +198,24 @@ class Game:
         print(self.player_x.player_name, "'s total wins: ", counts[self.player_x.player_name] if self.player_x.player_name in counts else 0)
         print(self.player_o.player_name, "'s total wins: ", counts[self.player_o.player_name] if self.player_o.player_name in counts else 0)
         print("total draw: ", counts["No Winner"] if "No Winner" in counts else 0)
+    
+    def announce_result_flask(self, winner, filled):
+        if winner is None and filled is True:
+            self.games.loc[len(self.games)] = {
+                "Game ID": len(self.games),
+                "Player 1": self.player_x.player_name,
+                "Player 2": self.player_o.player_name,
+                "Winner": "No Winner",
+            }
+            return "No More Spot to place Chess, No Winner is found"
+        else:
+            self.games.loc[len(self.games)] = {
+                "Game ID": len(self.games),
+                "Player 1": self.player_x.player_name,
+                "Player 2": self.player_o.player_name,
+                "Winner": self.player_x.player_name if winner == self.player_x.symbol else self.player_o.player_name,
+            }
+            return ("Winner is: " + winner)
 
     def run(self):
         winner = self.board.get_winner()
@@ -188,8 +223,26 @@ class Game:
         while winner is None and filled is False:
             next_player = self.next_player()
             self.print_turn(next_player)
-            next_player.get_move(self.board)
+            next_player.get_move(self.board, False, 0, 0)
             winner = self.board.get_winner()
             filled = self.board.is_board_filled()
         self.announce_result(winner, filled)
         self.games.to_csv(self.games_filename, index=False)
+
+    def runflask(self, player, x, y):
+        if player == self.current_player:
+            return "wrong turn"
+        else:
+            next_player = self.next_player()
+            result = next_player.get_move(self.board, True, x, y)
+            if result != None:
+                next_player = self.prev_player()
+                return result
+            winner = self.board.get_winner()
+            filled = self.board.is_board_filled()
+            print("Winner", winner, "Filled", filled)
+            if winner is not None or filled is True:
+                result = self.announce_result_flask(winner, filled)
+                self.games.to_csv(self.games_filename, index=False)
+                return result
+        return self.board.getboardflask()
