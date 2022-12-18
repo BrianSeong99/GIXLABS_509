@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        table,
+        td,
+        th {
+            border: 1px solid;
+            height: 70px;
+            text-align: center;
+
+        }
+
+        table {
+            width: 50%;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>{{ message }}</h1>
+    <table class="board">
+        {%- for x in range(board|length) %}
+        <tr>
+            {%- for y in range(board[x]|length) %}
+                <td class="cell">{{board[x][y]}}</td>
+            {%- endfor %}
+        </tr>
+        {%- endfor %}
+    </table>
+    <br>
+    <form action="http://127.0.0.1:5000/play" method="POST">
+        <fieldset>
+            <legend>Player Your Move Here</legend>
+            <div>
+                <label for="X">Row:</label><br>
+                <input type="text" id="X" name="X">
+                <br>
+                <label for="Y">Col:</label><br>
+                <input type="text" id="Y" name="Y">
+                <input type="hidden" id="player" name="player" value={{ current_turn }} />
+            </div>
+            <br>
+            <div>
+                <input type="submit" value="Play">
+            </div>
+        </fieldset>
+    </form>
+</body>
+</html>

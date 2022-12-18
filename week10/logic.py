@@ -26,7 +26,7 @@ class Board:
         return print_string
     
     def getboardflask(self):
-        return self.rows
+        return [['.' if ele == None else ele for ele in row] for row in self.rows]
 
     def get(self, x, y):
         return self.rows[x][y]
@@ -143,7 +143,7 @@ class Game:
         self.player_x.set_symbol = 'X'
         self.player_o = player_o
         self.player_o.set_symbol = 'O'
-        self.current_player = 'O'
+        self.current_player = 'X'
         self.games_filename = games_filename
         if (exists(games_filename)):
             self.games = pd.read_csv(games_filename)
@@ -158,19 +158,21 @@ class Game:
     def next_player(self):
         if self.current_player == 'X':
             self.current_player = 'O'
-            return self.player_o
         else:
             self.current_player = 'X'
-            return self.player_x
     
     def prev_player(self):
         if self.current_player == 'X':
             self.current_player = 'O'
-            return self.player_o
         else:
             self.current_player = 'X'
-            return self.player_x
     
+    def get_current_player(self):
+        if self.current_player == 'X':
+            return self.player_x
+        else:
+            return self.player_o
+
     def print_turn(self, player):
         print_string = '\nCurrent Turn: ' + player.get_type() + ' ' + self.current_player
         print(print_string)
@@ -221,28 +223,29 @@ class Game:
         winner = self.board.get_winner()
         filled = self.board.is_board_filled()
         while winner is None and filled is False:
-            next_player = self.next_player()
-            self.print_turn(next_player)
-            next_player.get_move(self.board, False, 0, 0)
+            current_player = self.get_current_player()
+            self.print_turn(current_player)
+            current_player.get_move(self.board, False, 0, 0)
+            self.next_player()
             winner = self.board.get_winner()
             filled = self.board.is_board_filled()
         self.announce_result(winner, filled)
         self.games.to_csv(self.games_filename, index=False)
 
     def runflask(self, player, x, y):
-        if player == self.current_player:
-            return "wrong turn"
+        if player != self.current_player:
+            print("wrong turn")
         else:
-            next_player = self.next_player()
-            result = next_player.get_move(self.board, True, x, y)
-            if result != None:
-                next_player = self.prev_player()
-                return result
+            current_player = self.get_current_player()
+            message = current_player.get_move(self.board, True, x, y)
+            if message != None:
+                return message
+            self.next_player()
             winner = self.board.get_winner()
             filled = self.board.is_board_filled()
             print("Winner", winner, "Filled", filled)
             if winner is not None or filled is True:
-                result = self.announce_result_flask(winner, filled)
+                message = self.announce_result_flask(winner, filled)
                 self.games.to_csv(self.games_filename, index=False)
-                return result
-        return self.board.getboardflask()
+                return message
+        return None
